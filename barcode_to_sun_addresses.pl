@@ -46,7 +46,7 @@ Machine type
     61       |  4/e
     71       |  4/6x0   (670)
     72       |  SPARCstation 10,20
-    80       |  SPARCclassic, LX, SPARC 5, SPARC 4, SS1000, Voyager, and Ultra 1
+    80       |  SPARCclassic, LX, SPARC 5, SPARC 4, SS1000, Voyager, and Ultras
     83       |  Later workstations
 
 e.g. if you were going to run this for a SPARCstation 1 with a barcode of 'JET2', you'd use:
