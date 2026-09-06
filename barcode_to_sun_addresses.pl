@@ -85,6 +85,14 @@ pod2usage(-verbose => 2) if $help;
 
 pod2usage(-verbose => 1, -exitval => 1, -output => \*STDERR) unless ($machine_type && $barcode);
 
+# Validate the inputs before doing any math with them; strtol() and oct()
+# silently stop at the first character they don't understand, which would
+# give us confidently wrong answers instead of an error
+die "Barcode must be exactly 4 letters/digits (got '$barcode')\n"
+    unless $barcode =~ /^[0-9A-Za-z]{4}$/;
+die "Machine type must be 2 hex digits (got '$machine_type')\n"
+    unless $machine_type =~ /^[0-9A-Fa-f]{2}$/;
+
 # Some more variables we should declare
 my $hostid;
 my $mac;
@@ -97,6 +105,10 @@ $barcode_numeric = strtol($barcode, 36);
 # Create a serial #
 $serial = $barcode_numeric - 0xAA8C0;
 
+# A negative serial almost certainly means a mistyped barcode
+warn "Warning: barcode '$barcode' is below the expected range; " .
+     "the results are probably wrong (did you mistype it?)\n" if $serial < 0;
+
 # Create a MAC address
 $mac = $barcode_numeric - 0x82DC0;
 # Or we can add 0x27b00 to the serial to get the mac? (from: http://mail-index.netbsd.org/port-sparc/2001/09/04/0003.html)
@@ -108,14 +120,16 @@ $mac = $barcode_numeric - 0x82DC0;
 # Create a hostid
 # First, create a fake hex value to add to the serial:
 $machine_type = "0x" . $machine_type . "000000";
-# Now, convert it to a format we can add to the serial #: 
-$machine_type = oct($machine_type) if $machine_type =~ /^0/;
+# Now, convert it to a format we can add to the serial #:
+$machine_type = oct($machine_type);
 $hostid = $machine_type + $serial;
 
 # Be able to print the MAC address:
 # First, add the standard old Sun OUI:
 
-my @mac_address = ( 8, 0, 20 );
+# These are strings, not numbers, so the MAC prints with its leading
+# zeroes in standard notation (08:00:20, the classic Sun OUI)
+my @mac_address = ( "08", "00", "20" );
 
 # Next, parse out the host portion; we use substr() in reverse
 # as negative serials cause a problem if we don't

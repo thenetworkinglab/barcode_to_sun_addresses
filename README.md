@@ -2,7 +2,7 @@
 Script to convert from Sun Microsystems SPARCstation NVRAM 4-character barcodes to MAC, HostID, Serial # for SPARCstation SLC, ELC, and LX models.  May work with other later SPARCstations as well (e.g. Voyager).
 
 ## Version
-Version 0.1.0, released on February 28, 2021
+Version 0.3.0, released on September 6, 2026. See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ## References
 Some other sources of information about these barcodes:
